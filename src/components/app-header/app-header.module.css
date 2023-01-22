@@ -1,0 +1,56 @@
+.header {
+  max-width: 1920px;
+  height: 88px;
+  display: flex;
+  justify-content: center;
+}
+
+.nav {
+  display: flex;
+  flex-direction: row;
+  width: 1280px;
+
+}
+
+.navlist {
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  /* justify-content: space-between; */
+}
+
+.navlistitem {
+  display: flex;
+  justify-content: center;
+  flex: 1;
+}
+
+.navlistitem:last-child {
+  justify-content: right;
+}
+
+.linkbox {
+  box-sizing: border-box;
+
+  /* Auto layout */
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  height: 56px;
+  color: #8585AD;
+  text-decoration: none;
+}
+
+.linkbox_active {
+  color: #F2F2F3;
+}
+
+.linkbox:hover {
+  cursor: pointer;
+}

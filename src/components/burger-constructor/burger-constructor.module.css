@@ -1,0 +1,54 @@
+.section {
+  width: 600px;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 52px;
+}
+
+.container {}
+
+.burger_component_bun {}
+
+.burger_components {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  display: flex;
+  gap: 16px;
+  flex-direction: column;
+}
+
+
+.burger_component {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+}
+
+.complete_order_block {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.total_amount_text {
+  margin-right: 9.5px;
+}
+
+.element {
+  display: grid;
+}
+
+.container {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.scroll_block {
+  overflow-y: auto;
+  margin-right: -16px;
+}
