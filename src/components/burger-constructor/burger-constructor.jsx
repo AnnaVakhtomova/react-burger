@@ -140,7 +140,7 @@ InnerElement.propTypes = {
   item: ingredientPropTypes,
 };
 
-CompleteOrderBlock.prototype = {
+CompleteOrderBlock.propTypes = {
   total: PropTypes.number,
 };
 
