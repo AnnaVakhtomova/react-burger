@@ -1,0 +1,36 @@
+.section {
+  width: 600px;
+  display: flex;
+  flex-direction: column;
+}
+
+.tabs {
+  display: flex;
+}
+
+.ingredients_container {
+  overflow-y: auto;
+}
+
+.ingredients_list {
+
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: 24px;
+
+  list-style: none;
+  padding: 0;
+}
+
+.ingredient_item {
+  position: relative;
+  width: 272px;
+  min-height: 208px;
+  text-align: center;
+}
+
+.ingredient_item_price {
+  justify-content: center;
+  display: flex;
+  gap: 9px;
+}

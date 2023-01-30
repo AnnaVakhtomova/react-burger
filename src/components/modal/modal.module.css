@@ -1,0 +1,32 @@
+.modal {
+  background-color: #1C1C21;
+  box-shadow: 0px 24px 32px rgba(0, 0, 0, 0.04), 0px 16px 24px rgba(0, 0, 0, 0.04), 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 0px 1px rgba(0, 0, 0, 0.04);
+  border-radius: 40px;
+  width: 720px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 64px;
+}
+
+.header_text {
+  margin: 0;
+  padding: 0;
+
+}
+
+.close_button {
+  transition: opacity .3s;
+}
+
+.close_button:hover {
+
+  cursor: pointer;
+  opacity: 0.6;
+}
