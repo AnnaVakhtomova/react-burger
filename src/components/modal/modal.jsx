@@ -9,13 +9,13 @@ const root = document.getElementById("react-modals");
 const Modal = (props) => {
   const { children, header, onClose } = props;
 
-  const handleEscape = (e) => {
-    if (e.key === "Escape") {
-      props.onClose();
-    }
-  };
-
   useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === "Escape") {
+        props.onClose();
+      }
+    };
+
     document.addEventListener("keydown", handleEscape);
     return () => {
       document.removeEventListener("keydown", handleEscape);

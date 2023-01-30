@@ -6,9 +6,13 @@ const config = {
 };
 
 export function getIngredients() {
-  return fetch(`${config.baseUrl}/ingredients`, {
+  return request(`${config.baseUrl}/ingredients`, {
     headers: config.headers,
-  }).then(checkResponse);
+  });
+}
+
+function request(url, options) {
+  return fetch(url, options).then(checkResponse);
 }
 
 function checkResponse(response) {

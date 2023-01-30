@@ -4,6 +4,10 @@
   flex-direction: column;
 }
 
+.tabs {
+  display: flex;
+}
+
 .ingredients_container {
   overflow-y: auto;
 }

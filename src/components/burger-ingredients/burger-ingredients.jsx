@@ -28,12 +28,7 @@ const BurgerIngredients = (props) => {
 
 const Tabs = (props) => {
   return (
-    <div
-      style={{
-        display: "flex",
-      }}
-      className='pb-10'
-    >
+    <div className={styles.tabs + " pb-10"}>
       <Tab
         value='one'
         active={props.current === "one"}
