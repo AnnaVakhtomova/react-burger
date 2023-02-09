@@ -5,7 +5,11 @@
   margin-bottom: 52px;
 }
 
-.container {}
+.container {
+  flex: 1;
+  box-sizing: border-box;
+  outline: transparent dashed 5px;
+}
 
 .burger_component_bun {}
 
