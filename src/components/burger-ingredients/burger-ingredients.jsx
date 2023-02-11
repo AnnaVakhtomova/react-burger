@@ -26,7 +26,7 @@ const BurgerIngredients = () => {
 
   const setCurrentClick = (tab) => {
     const element = document.getElementById(tab);
-    if (element) element.scrollIntoView();
+    if (element) element.scrollIntoView({ behavior: "smooth" });
   };
 
   const handleClose = () => {
@@ -206,30 +206,30 @@ const IngredientItemPrice = ({ price }) => (
 );
 
 Tabs.propTypes = {
-  current: PropTypes.string,
-  setCurrent: PropTypes.func,
-  onClick: PropTypes.func,
+  current: PropTypes.string.isRequired,
+  setCurrent: PropTypes.func.isRequired,
+  onClick: PropTypes.func.isRequired,
 };
 
 Ingredients.propTypes = {
-  items: PropTypes.arrayOf(ingredientPropTypes),
-  current: PropTypes.string,
-  setCurrent: PropTypes.func,
+  items: PropTypes.arrayOf(ingredientPropTypes).isRequired,
+  current: PropTypes.string.isRequired,
+  setCurrent: PropTypes.func.isRequired,
 };
 
 IngredientsType.propTypes = {
-  id: PropTypes.string,
-  header: PropTypes.string,
-  items: PropTypes.arrayOf(ingredientPropTypes),
-  refProp: PropTypes.object,
+  id: PropTypes.string.isRequired,
+  header: PropTypes.string.isRequired,
+  items: PropTypes.arrayOf(ingredientPropTypes).isRequired,
+  refProp: PropTypes.object.isRequired,
 };
 
 IngredientItem.propTypes = {
-  item: ingredientPropTypes,
+  item: ingredientPropTypes.isRequired,
 };
 
 IngredientItemPrice.propTypes = {
-  price: PropTypes.number,
+  price: PropTypes.number.isRequired,
 };
 
 export default BurgerIngredients;

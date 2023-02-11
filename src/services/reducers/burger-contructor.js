@@ -19,7 +19,10 @@ export const burgerConstructor = (state = initialState, action) => {
     case ADD_BUN:
       return { ...state, bun: action.bun };
     case ADD_INGREDIENT:
-      return { ...state, elements: [...state.elements, action.ingredient] };
+      return {
+        ...state,
+        elements: [...state.elements, action.ingredient],
+      };
     case DELETE_INGREDIENT:
       const elements = [...state.elements];
       elements.splice(action.index, 1);

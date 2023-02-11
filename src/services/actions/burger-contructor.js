@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from "uuid";
+
 export const ADD_INGREDIENT = "ADD_INGREDIENT";
 export const DELETE_INGREDIENT = "DELETE_INGREDIENT";
 export const MOVE_INGREDIENT = "MOVE_INGREDIENT";
@@ -10,6 +12,7 @@ export function addIngredient(id) {
   return function (dispatch, getState) {
     const state = getState();
     const ingredient = state.ingredients.ingredients.find((x) => x._id === id);
+
     if (ingredient.type === "bun") {
       dispatch({ type: ADD_BUN, bun: ingredient });
       if (state.burgerConstructor.bun != null) {
@@ -19,7 +22,8 @@ export function addIngredient(id) {
         });
       }
     } else {
-      dispatch({ type: ADD_INGREDIENT, ingredient: ingredient });
+      const uuid = uuidv4();
+      dispatch({ type: ADD_INGREDIENT, ingredient: { ...ingredient, uuid } });
     }
 
     dispatch({ type: COUNTERS_INCREMENT, id: ingredient._id });

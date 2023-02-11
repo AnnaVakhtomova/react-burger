@@ -125,7 +125,12 @@ const List = () => {
         {elements.length ? (
           <ul className={styles.burger_components}>
             {elements.map((item, index) => (
-              <InnerElement key={index} item={item} index={index} move={move} />
+              <InnerElement
+                key={item.uuid}
+                item={item}
+                index={index}
+                move={move}
+              />
             ))}
           </ul>
         ) : null}
@@ -204,9 +209,12 @@ const CompleteOrderBlock = () => {
 };
 
 InnerElement.propTypes = {
-  item: ingredientPropTypes,
-  index: PropTypes.number,
-  move: PropTypes.func,
+  item: PropTypes.shape({
+    ingredientPropTypes,
+    uuid: PropTypes.string.isRequired,
+  }).isRequired,
+  index: PropTypes.number.isRequired,
+  move: PropTypes.func.isRequired,
 };
 
 export default BurgerConstructor;
