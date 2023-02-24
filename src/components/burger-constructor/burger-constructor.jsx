@@ -1,4 +1,4 @@
-import { memo, useMemo, useState } from "react";
+import { memo, useCallback, useMemo, useRef } from "react";
 import styles from "./burger-constructor.module.css";
 import {
   ConstructorElement,
@@ -10,91 +10,172 @@ import { ingredientPropTypes } from "../../prop-types/ingredienPropTypes";
 import PropTypes from "prop-types";
 import Modal from "../modal/modal";
 import OrderDetails from "../order-details/order-details";
+import { useDrag, useDrop } from "react-dnd/dist/hooks";
+import {
+  addIngredient,
+  deleteIngredient,
+  moveIngredient,
+} from "../../services/actions/burger-contructor";
+import { useDispatch, useSelector } from "react-redux";
+import { RESET_ORDER, createOrder } from "../../services/actions/order";
 
-const BurgerConstructor = memo((props) => {
-  const { bun, elements } = props;
-  const total = useMemo(() => {
-    let sum = 0;
-    if (bun) sum += bun.price;
-    if (elements.length) {
-      elements.reduce(function (previousValue, item) {
-        return previousValue + item.price;
-      }, sum);
-    }
-
-    return sum;
-  }, [bun, elements]);
-
+const BurgerConstructor = () => {
   return (
     <section className={styles.section + " mt-25"}>
-      <List bun={bun} innerElements={elements} />
-      <CompleteOrderBlock total={total} />
+      <List />
+      <CompleteOrderBlock />
     </section>
   );
-});
+};
 
 const InnerElement = memo((props) => {
+  const { move } = props;
+  const ref = useRef(null);
+  const [{ isDrag }, dragTarget] = useDrag({
+    type: "ingredients",
+    item: { isMove: true, startIndex: props.index, index: props.index },
+    collect: (monitor) => ({ isDrag: monitor.isDragging() }),
+    end: (item, monitor) => {
+      const didDrop = monitor.didDrop();
+      if (!didDrop) {
+        move(item.index, item.startIndex);
+      }
+    },
+  });
+
+  const [, dropTarget] = useDrop({
+    accept: "ingredients",
+    hover(item, monitor) {
+      const currentIndex = item.index;
+      const hoverIndex = props.index;
+      if (currentIndex !== hoverIndex) {
+        move(currentIndex, hoverIndex);
+        item.index = hoverIndex;
+      }
+    },
+  });
+
+  dragTarget(dropTarget(ref));
+
+  const dispatch = useDispatch();
+
+  const handleDelete = () => {
+    dispatch(deleteIngredient(props.index));
+  };
+
   return (
-    <li className={styles.burger_component}>
+    <li ref={ref} className={styles.burger_component}>
       <DragIcon type='primary' />
       <ConstructorElement
         extraClass={styles.element + " ml-2"}
         text={props.item.name}
         price={props.item.price}
         thumbnail={props.item.image}
+        handleClose={handleDelete}
       />
     </li>
   );
 });
 
-const List = (props) => {
-  const { bun, innerElements } = props;
+const List = () => {
+  const dispatch = useDispatch();
+  const { bun, elements } = useSelector((store) => store.burgerConstructor);
+
+  const [{ canDrop }, dropTarget] = useDrop({
+    accept: "ingredients",
+    collect: (monitor) => ({
+      canDrop: monitor.canDrop(),
+    }),
+    drop(item) {
+      if (item.isMove) {
+      } else {
+        dispatch(addIngredient(item.id));
+      }
+    },
+  });
+
+  const move = useCallback(
+    (startIndex, hoverIndex) => {
+      dispatch(moveIngredient(startIndex, hoverIndex));
+    },
+    [dispatch]
+  );
+
+  const borderColor = canDrop ? "lightgreen" : "transparent";
 
   return (
-    <div className={styles.container + " pl-4 pr-4"}>
+    <div
+      ref={dropTarget}
+      className={styles.container + " pl-4 pr-4"}
+      style={{ outlineColor: borderColor }}
+    >
       {bun && (
-        <ConstructorElement
-          extraClass={styles.element + " ml-8 mb-4 mr-4"}
-          type='top'
-          isLocked={true}
-          text={bun.name + " (верх)"}
-          price={200}
-          thumbnail={bun.image}
-        />
+        <div>
+          <ConstructorElement
+            extraClass={styles.element + " ml-8 mb-4 mr-4"}
+            type='top'
+            isLocked={true}
+            text={bun.name + " (верх)"}
+            price={200}
+            thumbnail={bun.image}
+          />
+        </div>
       )}
       <div className={styles.scroll_block + " custom-scroll"}>
-        {innerElements.length && (
+        {elements.length ? (
           <ul className={styles.burger_components}>
-            {innerElements.map((item, index) => (
-              <InnerElement key={index} item={item} />
+            {elements.map((item, index) => (
+              <InnerElement
+                key={item.uuid}
+                item={item}
+                index={index}
+                move={move}
+              />
             ))}
           </ul>
-        )}
+        ) : null}
       </div>
 
       {bun && (
-        <ConstructorElement
-          extraClass={styles.element + " ml-8 mt-4 mr-4"}
-          type='bottom'
-          isLocked={true}
-          text={bun.name + " (низ)"}
-          price={200}
-          thumbnail={bun.image}
-        />
+        <div>
+          <ConstructorElement
+            extraClass={styles.element + " ml-8 mt-4 mr-4"}
+            type='bottom'
+            isLocked={true}
+            text={bun.name + " (низ)"}
+            price={200}
+            thumbnail={bun.image}
+          />
+        </div>
       )}
     </div>
   );
 };
 
-const CompleteOrderBlock = (props) => {
-  const [isOpenModal, setOpenModal] = useState(false);
+const CompleteOrderBlock = () => {
+  const { bun, elements } = useSelector((store) => store.burgerConstructor);
+  const { order } = useSelector((store) => store.order);
 
-  const handleOpen = () => {
-    setOpenModal(true);
-  };
+  const total = useMemo(() => {
+    let sum = 0;
+    if (bun) sum += bun.price * 2;
+    if (elements.length > 0) {
+      const elementsSum = elements.reduce(function (previousValue, item) {
+        return previousValue + item.price;
+      }, 0);
+      sum += elementsSum;
+    }
+
+    return sum;
+  }, [bun, elements]);
+  const dispatch = useDispatch();
 
   const handleClose = () => {
-    setOpenModal(false);
+    dispatch({ type: RESET_ORDER });
+  };
+
+  const orderCreate = () => {
+    dispatch(createOrder());
   };
 
   const modal = (
@@ -108,7 +189,7 @@ const CompleteOrderBlock = (props) => {
       <span
         className={styles.total_amount_text + " text text_type_main-large "}
       >
-        {props.total}
+        {total}
       </span>
       <CurrencyIcon type='primary' />
 
@@ -117,31 +198,23 @@ const CompleteOrderBlock = (props) => {
         type='primary'
         size='large'
         extraClass='ml-10'
-        onClick={handleOpen}
+        onClick={orderCreate}
+        disabled={total === 0}
       >
         Нажми на меня
       </Button>
-      {isOpenModal && modal}
+      {order && modal}
     </div>
   );
 };
 
-BurgerConstructor.propTypes = {
-  bun: ingredientPropTypes,
-  elements: PropTypes.arrayOf(ingredientPropTypes),
-};
-
-List.propTypes = {
-  bun: ingredientPropTypes,
-  innerElements: PropTypes.arrayOf(ingredientPropTypes),
-};
-
 InnerElement.propTypes = {
-  item: ingredientPropTypes,
-};
-
-CompleteOrderBlock.propTypes = {
-  total: PropTypes.number,
+  item: PropTypes.shape({
+    ingredientPropTypes,
+    uuid: PropTypes.string.isRequired,
+  }).isRequired,
+  index: PropTypes.number.isRequired,
+  move: PropTypes.func.isRequired,
 };
 
 export default BurgerConstructor;

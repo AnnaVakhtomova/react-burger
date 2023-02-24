@@ -11,6 +11,14 @@ export function getIngredients() {
   });
 }
 
+export function createOrder(ingredients) {
+  return request(`${config.baseUrl}/orders`, {
+    headers: config.headers,
+    method: "POST",
+    body: JSON.stringify({ ingredients }),
+  });
+}
+
 function request(url, options) {
   return fetch(url, options).then(checkResponse);
 }

@@ -31,12 +31,12 @@ const IngredientDetails = (props) => {
 };
 
 IngredientDetails.propTypes = {
-  ingredient: ingredientPropTypes,
+  ingredient: ingredientPropTypes.isRequired,
 };
 
 Nutrition.propTypes = {
-  name: PropTypes.string,
-  value: PropTypes.number,
+  name: PropTypes.string.isRequired,
+  value: PropTypes.number.isRequired,
 };
 
 // proteins
