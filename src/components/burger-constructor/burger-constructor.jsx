@@ -18,10 +18,14 @@ import {
 } from "../../services/actions/burger-contructor";
 import { useDispatch, useSelector } from "react-redux";
 import { RESET_ORDER, createOrder } from "../../services/actions/order";
+import { useNavigate, useLocation } from "react-router-dom";
+import { LoaderOverlay } from "../loader/loader";
 
 const BurgerConstructor = () => {
+  const { orderCreateRequest } = useSelector((store) => store.order);
   return (
     <section className={styles.section + " mt-25"}>
+      {orderCreateRequest && <LoaderOverlay size={"200px"} />}
       <List />
       <CompleteOrderBlock />
     </section>
@@ -155,6 +159,9 @@ const List = () => {
 const CompleteOrderBlock = () => {
   const { bun, elements } = useSelector((store) => store.burgerConstructor);
   const { order } = useSelector((store) => store.order);
+  const { isAuth } = useSelector((store) => store.auth);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const total = useMemo(() => {
     let sum = 0;
@@ -175,7 +182,11 @@ const CompleteOrderBlock = () => {
   };
 
   const orderCreate = () => {
-    dispatch(createOrder());
+    if (!isAuth) {
+      navigate("/login", { replace: true, state: { from: location } });
+    } else {
+      dispatch(createOrder());
+    }
   };
 
   const modal = (
@@ -199,9 +210,9 @@ const CompleteOrderBlock = () => {
         size='large'
         extraClass='ml-10'
         onClick={orderCreate}
-        disabled={total === 0}
+        disabled={total === 0 || !bun}
       >
-        Нажми на меня
+        Оформить заказ
       </Button>
       {order && modal}
     </div>

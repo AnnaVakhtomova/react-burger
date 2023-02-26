@@ -5,6 +5,7 @@ import {
   ListIcon,
   ProfileIcon,
 } from "@ya.praktikum/react-developer-burger-ui-components";
+import { Link, useLocation, NavLink } from "react-router-dom";
 
 const AppHeader = () => {
   return (
@@ -14,22 +15,31 @@ const AppHeader = () => {
           <li className={styles.navlistitem}>
             <ul className={styles.navlist}>
               <li>
-                <a
-                  href='/'
-                  className={
-                    styles.linkbox + " pl-5 pr-5 " + styles.linkbox_active
+                <NavLink
+                  to={"/"}
+                  className={({ isActive }) =>
+                    styles.linkbox +
+                    " pl-5 pr-5 " +
+                    (isActive ? styles.linkbox_active : "")
                   }
                 >
                   <BurgerIcon type='primary' />
                   <span>Конструктор</span>
-                </a>
+                </NavLink>
               </li>
 
               <li>
-                <a href='/feed' className={styles.linkbox + " pl-5 pr-5"}>
+                <NavLink
+                  to={"/feed"}
+                  className={({ isActive }) =>
+                    styles.linkbox +
+                    " pl-5 pr-5 " +
+                    (isActive ? styles.linkbox_active : "")
+                  }
+                >
                   <ListIcon type='secondary' />
                   <span>Лента заказов</span>
-                </a>
+                </NavLink>
               </li>
             </ul>
           </li>
@@ -39,10 +49,17 @@ const AppHeader = () => {
           </li>
 
           <li className={styles.navlistitem}>
-            <a href='/profile' className={styles.linkbox + " pl-5 pr-5"}>
+            <NavLink
+              to={"/profile"}
+              className={({ isActive }) =>
+                styles.linkbox +
+                " pl-5 pr-5 " +
+                (isActive ? styles.linkbox_active : "")
+              }
+            >
               <ProfileIcon type='secondary' />
               <span>Личный кабинет</span>
-            </a>
+            </NavLink>
           </li>
         </ul>
       </nav>
