@@ -6,7 +6,9 @@ const ModalOverlay = ({ children, onClose }) => {
     e.stopPropagation();
 
     if (e.target === e.currentTarget) {
-      onClose();
+      if (onClose) {
+        onClose();
+      }
     }
   };
 
@@ -19,7 +21,7 @@ const ModalOverlay = ({ children, onClose }) => {
 
 ModalOverlay.propTypes = {
   children: PropTypes.element.isRequired,
-  onClose: PropTypes.func.isRequired,
+  onClose: PropTypes.func,
 };
 
 export default ModalOverlay;

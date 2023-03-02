@@ -1,66 +1,83 @@
-import { useEffect, useState } from "react";
-import { getIngredients } from "../../services/actions/ingredients";
-import styles from "./app.module.css";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 
-import { useDispatch } from "react-redux";
-
+import {
+  ConstructorPage,
+  ForgotPasswordPage,
+  IngredientPage,
+  LoginPage,
+  ProfilePage,
+  RegisterPage,
+  ResetPasswordPage,
+} from "../../pages";
 import AppHeader from "../app-header/app-header";
-import BurgerConstructor from "../burger-constructor/burger-constructor";
-import BurgerIngredients from "../burger-ingredients/burger-ingredients";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
-import { useSelector } from "react-redux";
+import ProfileContainer from "../profile-container/profile-container";
+import { ProtectedRouteElement } from "../protected-route/protected-route";
+import { AuthorizedProtectedRouteElement } from "../authorized-protected-route/authorized-protected-route";
+import { useDispatch } from "react-redux";
+import { checkAuth } from "../../services/actions/auth";
+import { useEffect } from "react";
 
 const App = () => {
-  const [stateConstructor, setStateConstructor] = useState({
-    bun: null,
-    elements: [],
-  });
-
   const dispatch = useDispatch();
-
   useEffect(() => {
-    dispatch(getIngredients());
-  }, [dispatch]);
+    dispatch(checkAuth());
+  }, []);
 
-  // useEffect(() => {
-  //   const getData = async () => {
-  //     setState({ ...state, ingredients: [], loading: true });
-  //     const data = await getIngredients();
-  //     setState({ ...state, ingredients: data.data, loading: false });
-  //   };
-
-  //   getData().catch((err) => {
-  //     console.error(err);
-  //     setState({ ...state, ingredients: [], loading: false });
-  //   });
-  // }, []);
-
-  // // временно для заполнения констуктора
-  // useEffect(() => {
-  //   if (state.ingredients.length) {
-  //     const innerIngredients = state.ingredients.filter(
-  //       (x) => x.type !== "bun"
-  //     );
-  //     const bun = state.ingredients.find((el) => el.type === "bun");
-  //     setStateConstructor({ bun: bun, elements: innerIngredients });
-  //   } else {
-  //     setStateConstructor({ bun: null, elements: [] });
-  //   }
-  // }, [state.ingredients]);
-  const { ingredients } = useSelector((store) => store.ingredients);
-  const bun = ingredients.find((el) => el.type === "bun");
-  const elements = []; // = ingredients.filter((x) => x.type !== "bun");
   return (
-    <div className={styles.app + " text text_type_main-default"}>
-      <AppHeader />
-      <main className={styles.main}>
-        <DndProvider backend={HTML5Backend}>
-          <BurgerIngredients />
-          <BurgerConstructor bun={bun} elements={elements} />
-        </DndProvider>
-      </main>
-    </div>
+    <>
+      <BrowserRouter>
+        <AppHeader />
+        <RoutesList />
+      </BrowserRouter>
+    </>
+  );
+};
+
+const RoutesList = () => {
+  const location = useLocation();
+  return (
+    <Routes>
+      <Route path='/' element={<ConstructorPage />} />
+      <Route
+        path='/login'
+        element={<AuthorizedProtectedRouteElement element={<LoginPage />} />}
+      />
+      <Route
+        path='/register'
+        element={<AuthorizedProtectedRouteElement element={<RegisterPage />} />}
+      />
+      <Route
+        path='/forgot-password'
+        element={
+          <AuthorizedProtectedRouteElement element={<ForgotPasswordPage />} />
+        }
+      />
+      <Route
+        path='/reset-password'
+        element={
+          <AuthorizedProtectedRouteElement element={<ResetPasswordPage />} />
+        }
+      />
+      <Route
+        path='/profile'
+        element={<ProtectedRouteElement element={<ProfileContainer />} />}
+      >
+        <Route path='' element={<ProfilePage />} />
+        <Route path='orders' element={<div>История заказов</div>} />
+        <Route path='orders/:id' element={<div>Информация о заказе</div>} />
+      </Route>
+      <Route
+        path='/ingredients/:id'
+        element={
+          location.state && location.state.modal ? (
+            <ConstructorPage />
+          ) : (
+            <IngredientPage />
+          )
+        }
+      />
+      <Route path='*' element={<ConstructorPage />} />
+    </Routes>
   );
 };
 

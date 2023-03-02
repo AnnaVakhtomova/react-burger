@@ -3,7 +3,7 @@ import {
   CurrencyIcon,
   Counter,
 } from "@ya.praktikum/react-developer-burger-ui-components";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import styles from "./burger-ingredients.module.css";
 import PropTypes from "prop-types";
 import { ingredientPropTypes } from "../../prop-types/ingredienPropTypes";
@@ -15,14 +15,24 @@ import {
   RESET_CURRENT_INGREDIENT,
   SET_CURRENT_INGREDIENT,
 } from "../../services/actions/current-ingredient";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 
 const BurgerIngredients = () => {
   const [current, setCurrent] = useState("one");
-  const { ingredient: currentIngredient } = useSelector(
-    (store) => store.currentIngredient
-  );
+
+  const [currentIngredient, setcurrentIngredient] = useState(null);
   const dispatch = useDispatch();
+  const location = useLocation();
+  const navigate = useNavigate();
   const { ingredients } = useSelector((store) => store.ingredients);
+
+  const { id } = useParams();
+
+  useEffect(() => {
+    if (!id) setcurrentIngredient(null);
+    const ing = ingredients.find((x) => x._id === id);
+    setcurrentIngredient(ing);
+  }, [ingredients, id]);
 
   const setCurrentClick = (tab) => {
     const element = document.getElementById(tab);
@@ -30,7 +40,8 @@ const BurgerIngredients = () => {
   };
 
   const handleClose = () => {
-    dispatch({ type: RESET_CURRENT_INGREDIENT });
+    setcurrentIngredient(null);
+    navigate(-1);
   };
 
   return (
@@ -45,6 +56,7 @@ const BurgerIngredients = () => {
         items={ingredients}
         current={current}
         setCurrent={setCurrent}
+        setIngredient={setcurrentIngredient}
       ></Ingredients>
       {currentIngredient && (
         <Modal header='Детали ингредиента' onClose={handleClose}>
@@ -128,14 +140,22 @@ const Ingredients = (props) => {
       className={styles.ingredients_container + " custom-scroll"}
       onScroll={handleScroll}
     >
-      <IngredientsType refProp={refBuns} id='one' header='Булки' items={buns} />
       <IngredientsType
+        setIngredient={props.setIngredient}
+        refProp={refBuns}
+        id='one'
+        header='Булки'
+        items={buns}
+      />
+      <IngredientsType
+        setIngredient={props.setIngredient}
         refProp={refSauces}
         id='two'
         header='Соусы'
         items={sauces}
       />
       <IngredientsType
+        setIngredient={props.setIngredient}
         refProp={refMains}
         id='three'
         header='Начинки'
@@ -157,7 +177,11 @@ const IngredientsType = (props) => {
       </h3>
       <ul className={styles.ingredients_list + " mb-10 mt-6 ml-4 mr-4"}>
         {props.items.map((item) => (
-          <IngredientItem item={item} key={item._id} />
+          <IngredientItem
+            setIngredient={props.setIngredient}
+            item={item}
+            key={item._id}
+          />
         ))}
       </ul>
     </>
@@ -165,10 +189,11 @@ const IngredientsType = (props) => {
 };
 
 const IngredientItem = (props) => {
-  const { item } = props;
+  const { item, setIngredient } = props;
   const id = item._id;
   const count = useSelector((store) => store.burgerConstructor.counters[id]);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [, ref] = useDrag({
     type: "ingredients",
@@ -179,7 +204,11 @@ const IngredientItem = (props) => {
   });
 
   const setCurrentIngredient = () => {
-    dispatch({ type: SET_CURRENT_INGREDIENT, ingredient: item });
+    setIngredient(item);
+    navigate(`/ingredients/${item._id}`, {
+      state: { modal: true },
+      replace: false,
+    });
   };
 
   return (
@@ -215,6 +244,7 @@ Ingredients.propTypes = {
   items: PropTypes.arrayOf(ingredientPropTypes).isRequired,
   current: PropTypes.string.isRequired,
   setCurrent: PropTypes.func.isRequired,
+  setIngredient: PropTypes.func.isRequired,
 };
 
 IngredientsType.propTypes = {
@@ -222,10 +252,12 @@ IngredientsType.propTypes = {
   header: PropTypes.string.isRequired,
   items: PropTypes.arrayOf(ingredientPropTypes).isRequired,
   refProp: PropTypes.object.isRequired,
+  setIngredient: PropTypes.func.isRequired,
 };
 
 IngredientItem.propTypes = {
   item: ingredientPropTypes.isRequired,
+  setIngredient: PropTypes.func.isRequired,
 };
 
 IngredientItemPrice.propTypes = {
